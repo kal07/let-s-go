@@ -38,6 +38,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
 	data := app.newTemplateData(r)
 	data.Snippet = snippet
 
@@ -54,9 +55,9 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type snippetCreateForm struct {
-	Title               string
-	Content             string
-	Expires             int
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
 	validator.Validator `form:"-"`
 }
 
@@ -86,6 +87,6 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		app.serverError(w, r, err)
 		return
 	}
-
+	app.sessionManager.Put(r.Context(), "flash", "Snippet successfully created!")
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
